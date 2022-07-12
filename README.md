@@ -1,1 +1,3 @@
-# shop-aws-serverless
+# Shop built with AWS Serverless
+
+![architecture](./architecture.png)
