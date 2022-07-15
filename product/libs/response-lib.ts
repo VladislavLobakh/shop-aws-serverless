@@ -1,3 +1,4 @@
+import { APIGatewayProxyResult } from 'aws-lambda';
 import { AppError } from './errors/app-error';
 import { HttpStatusCode } from './errors/http-status-codes';
 
@@ -5,7 +6,7 @@ export const success = (
   body,
   contentType: string = 'application/json',
   status: HttpStatusCode = HttpStatusCode.OK
-) => {
+): APIGatewayProxyResult => {
   return buildResponse(status, body, contentType);
 };
 
@@ -61,7 +62,7 @@ const buildResponse = (
   statusCode: HttpStatusCode,
   body,
   contentType: string = 'application/json'
-) => {
+): APIGatewayProxyResult => {
   return {
     statusCode: statusCode,
     headers: {

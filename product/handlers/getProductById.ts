@@ -22,7 +22,9 @@ const fetchProducts = async (): Promise<ProductModel[]> => {
   return Promise.resolve(products as ProductModel[]);
 };
 
-const fetchProductById = async (productId: string): Promise<ProductModel> => {
+export const fetchProductById = async (
+  productId: string
+): Promise<ProductModel> => {
   const products = await fetchProducts();
   const product = products.find((product) => product.id === productId);
 
