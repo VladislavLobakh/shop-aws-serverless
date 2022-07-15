@@ -4,4 +4,4 @@ jspm_packages
 
 .serverless
 .webpack
-/ts-temp
+ts-temp
