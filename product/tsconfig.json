@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "lib": ["es2017"],
+    "target": "ES2020",
+    "lib": ["ESNext"],
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -12,5 +12,11 @@
     "removeComments": true,
     "resolveJsonModule": true,
     "types": ["node", "jest"]
-  }
+  },
+  "exclude": [
+    "node_modules/**/*",
+    ".serverless/**/*",
+    "_warmup/**/*",
+    ".vscode/**/*"
+  ]
 }

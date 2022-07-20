@@ -1,23 +1,64 @@
-import { success } from './../libs/response-lib';
-import { ProductModel } from './../models/product.model';
+import { HttpStatusCode } from './../utils/http-status-codes';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { Product } from './../types/product.type';
 import { getProductsList } from '../handlers/getProductsList';
+import * as productsController from '../controllers/products.controller';
 
-describe('getProductsList', () => {
-  const products: ProductModel[] = [
-    {
-      count: 4,
-      description: 'Short Product Description1',
-      id: '7567ec4b-b10c-48c5-9345-fc73c48a80aa',
-      price: 2.4,
-      title: 'ProductOne'
-    }
-  ];
-  beforeEach(() => {
-    jest.mock('../mocks/products.json', () => products);
+jest.mock('../controllers/products.controller');
+
+const MOCK_PRODUCTS: Product[] = [
+  {
+    count: 4,
+    description: 'Principles: Life and Work by Ray Dalio',
+    id: '1',
+    price: 2.4,
+    title: 'Principles: Life and Work'
+  },
+  {
+    count: 6,
+    description: 'Stillness Is the Key by Ryan Holiday',
+    id: '2',
+    price: 10,
+    title: 'Stillness Is the Key'
+  }
+];
+
+describe('get products handler', () => {
+  it('should return 200 status code and product list', async () => {
+    const MOCK_EVENT = {} as unknown as APIGatewayProxyEvent;
+
+    (productsController.getProductsList as any).mockImplementation(() =>
+      Promise.resolve(MOCK_PRODUCTS)
+    );
+
+    const response = (await getProductsList(
+      MOCK_EVENT
+    )) as APIGatewayProxyResult;
+
+    expect(productsController.getProductsList).toBeCalled();
+
+    expect(response.statusCode).toBe(200);
+    expect(JSON.parse(response.body)).toEqual(MOCK_PRODUCTS);
   });
 
-  test('should recieve products', async () => {
-    const recievedProductsResponse = await getProductsList(null, null, null);
-    expect(recievedProductsResponse).toEqual(success(products));
+  it('should return 500 status code for unknown error', async () => {
+    const MOCK_EVENT = {} as unknown as APIGatewayProxyEvent;
+    const MOCK_ERROR = new Error('Unknown Error');
+
+    (productsController.getProductsList as any).mockImplementation(() =>
+      Promise.reject(MOCK_ERROR)
+    );
+
+    const response = (await getProductsList(
+      MOCK_EVENT
+    )) as APIGatewayProxyResult;
+
+    expect(productsController.getProductsList).toBeCalled();
+
+    expect(response.statusCode).toBe(HttpStatusCode.INTERNAL_SERVER_ERROR);
+    expect(JSON.parse(response.body)).toEqual({
+      statusCode: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      message: MOCK_ERROR.message
+    });
   });
 });

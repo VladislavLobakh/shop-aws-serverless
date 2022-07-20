@@ -1,20 +1,20 @@
 import { HttpStatusCode } from './http-status-codes';
 
 export class AppError extends Error {
-  public readonly name: string;
-  public readonly httpCode: HttpStatusCode;
+  public readonly message: string;
+  public readonly statusCode: HttpStatusCode;
 
   constructor(
-    name: string,
-    httpCode: HttpStatusCode = HttpStatusCode.BAD_REQUEST,
+    message: string,
+    statusCode: HttpStatusCode = HttpStatusCode.BAD_REQUEST,
     description?: string
   ) {
     super(description);
 
     Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
 
-    this.name = name;
-    this.httpCode = httpCode;
+    this.message = message;
+    this.statusCode = statusCode;
 
     Error.captureStackTrace(this);
   }
