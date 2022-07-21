@@ -1,0 +1,37 @@
+service: product
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: eu-west-1
+  profile: vladislavlobakh
+  apiGateway:
+    minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
+
+plugins:
+  - serverless-webpack
+
+package:
+  individually: true
+
+custom:
+  webpack:
+    includeModules: true
+
+functions:
+  getProductsList:
+    handler: handlers/getProductsList.getProductsList
+    events:
+      - http:
+          path: /products
+          method: get
+          cors: true
+  getProductById:
+    handler: handlers/getProductById.getProductById
+    events:
+      - http:
+          path: /products/{productId}
+          method: get
+          cors: true
