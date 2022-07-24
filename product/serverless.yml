@@ -17,7 +17,9 @@ provider:
     pgDatabasePassword: ${file(credentials.yml):pgDatabasePassword}
 
 plugins:
+  - serverless-auto-swagger
   - serverless-webpack
+  - serverless-offline
 
 package:
   individually: true
@@ -25,6 +27,18 @@ package:
 custom:
   webpack:
     includeModules: true
+  autoswagger:
+    title: Product Service
+    generateSwaggerOnDeploy: true
+    typefiles:
+      [
+        './types/products.type.ts',
+        './types/product.type.ts',
+        './types/create-product.type.ts'
+      ]
+    apiType: http
+    basePath: /${self:provider.stage}
+    swaggerPath: docs
 
 functions:
   getProductsList:
@@ -34,6 +48,10 @@ functions:
           path: /products
           method: get
           cors: true
+          responseData:
+            200:
+              description: 'Get list of products'
+              bodyType: 'Products'
   getProductById:
     handler: handlers/getProductById.getProductById
     events:
@@ -41,6 +59,10 @@ functions:
           path: /products/{productId}
           method: get
           cors: true
+          responseData:
+            200:
+              description: 'Get product data'
+              bodyType: 'Product'
   createProduct:
     handler: handlers/createProduct.createProduct
     events:
@@ -51,3 +73,8 @@ functions:
           request:
             schemas:
               application/json: ${file(schemas/create_product.json)}
+          bodyType: 'CreateProduct'
+          responseData:
+            200:
+              description: 'Create product'
+              bodyType: 'Product'

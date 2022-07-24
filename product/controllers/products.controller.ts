@@ -1,10 +1,11 @@
+import { Products } from './../types/products.type';
 import { CreateProduct } from './../types/create-product.type';
 import { pgConnect, pgDisconnect, pgQuery } from './../utils/pg-database.util';
 import { Product } from './../types/product.type';
 import { AppError } from '../utils/app-error.utils';
 import { HttpStatusCode } from '../utils/http-status-codes';
 
-export const getProductsList = async (): Promise<Product[]> => {
+export const getProductsList = async (): Promise<Products> => {
   const client = await pgConnect();
 
   try {
