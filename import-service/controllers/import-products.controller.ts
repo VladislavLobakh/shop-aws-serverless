@@ -10,7 +10,5 @@ export const getImportProductsSignedUrl = async (name): Promise<string> => {
     Expires: 60
   };
 
-  try {
-    return s3.getSignedUrl('putObject', params);
-  } catch (error) {}
+  return s3.getSignedUrlPromise('putObject', params);
 };
