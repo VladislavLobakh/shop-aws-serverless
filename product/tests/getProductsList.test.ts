@@ -1,3 +1,4 @@
+import { Products } from './../types/products.type';
 import { HttpStatusCode } from './../utils/http-status-codes';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { Product } from './../types/product.type';
@@ -6,7 +7,7 @@ import * as productsController from '../controllers/products.controller';
 
 jest.mock('../controllers/products.controller');
 
-const MOCK_PRODUCTS: Product[] = [
+const MOCK_PRODUCTS: Products = [
   {
     count: 4,
     description: 'Principles: Life and Work by Ray Dalio',

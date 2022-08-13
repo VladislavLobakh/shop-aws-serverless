@@ -30,7 +30,7 @@ export const lambdaHandler = (
       result = await controllerCallback(event);
       statusCode = HttpStatusCode.OK;
 
-      console.info(`RES <=== [${statusCode}]`, body);
+      console.info(`RES <=== [${statusCode}]`, result);
     } catch (err) {
       statusCode = err.statusCode || HttpStatusCode.INTERNAL_SERVER_ERROR;
 
@@ -50,7 +50,7 @@ export const lambdaHandler = (
         body:
           params.contentType === 'application/json'
             ? JSON.stringify(result)
-            : body
+            : result
       };
     }
   };
