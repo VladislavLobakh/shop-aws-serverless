@@ -15,6 +15,16 @@ provider:
     pgDatabaseName: ${file(credentials.yml):pgDatabaseName}
     pgDatabaseUsername: ${file(credentials.yml):pgDatabaseUsername}
     pgDatabasePassword: ${file(credentials.yml):pgDatabasePassword}
+    newProductsCreatedTopic: !Ref NewProductsTopic
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource: !GetAtt CatalogItemsQueue.Arn
+    - Effect: Allow
+      Action:
+        - sns:Publish
+      Resource: !Ref NewProductsTopic
 
 plugins:
   - serverless-auto-swagger
@@ -78,3 +88,43 @@ functions:
             200:
               description: 'Create product'
               bodyType: 'Product'
+  catalogBatchProcess:
+    handler: handlers/catalogBatchProcess.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn: !GetAtt CatalogItemsQueue.Arn
+
+resources:
+  Resources:
+    CatalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalog-items-queue
+    NewProductsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: sns-new-products-topic
+    NewProductsTopicManySubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: !Ref NewProductsTopic
+        Endpoint: myprivateemail1@gmail.com
+        Protocol: email
+        FilterPolicy: { 'productsCount': [{ 'numeric': ['>=', 2] }] }
+    NewProductsTopicSingleSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: !Ref NewProductsTopic
+        Endpoint: myprivateemail2@gmail.com
+        Protocol: email
+        FilterPolicy: { 'productsCount': [{ 'numeric': ['=', 1] }] }
+  Outputs:
+    CatalogItemsQueueUrl:
+      Value: !Ref CatalogItemsQueue
+      Export:
+        Name: CatalogItemsQueueUrl
+    CatalogItemsQueueArn:
+      Value: !GetAtt CatalogItemsQueue.Arn
+      Export:
+        Name: CatalogItemsQueueArn
