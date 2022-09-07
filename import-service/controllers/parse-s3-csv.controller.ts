@@ -1,13 +1,14 @@
 import { HttpStatusCode } from './../../product/utils/http-status-codes';
 import { AppError } from './../utils/app-error.utils';
 import { S3EventRecord } from 'aws-lambda';
-import { S3 } from 'aws-sdk';
+import { S3, SQS } from 'aws-sdk';
 import csvParser from 'csv-parser';
 
 export const parseCSVFiles = async (
   records: S3EventRecord[]
 ): Promise<void> => {
   const s3 = new S3();
+  const sqs = new SQS();
   const fileKeys: string[] = records.map((record) => record.s3.object.key);
 
   for (const key of fileKeys) {
@@ -27,8 +28,13 @@ export const parseCSVFiles = async (
           );
         })
         .pipe(csvParser())
-        .on('data', (csvRow) => {
-          console.log(csvRow);
+        .on('data', async (csvRow) => {
+          await sqs
+            .sendMessage({
+              QueueUrl: process.env.catalogItemsQueueUrl,
+              MessageBody: JSON.stringify(csvRow)
+            })
+            .promise();
         })
         .on('end', () => {
           console.log('End stream');

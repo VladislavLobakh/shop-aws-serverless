@@ -11,6 +11,7 @@ provider:
     minimumCompressionSize: 1024 # Enable gzip compression for responses > 1 KB
   environment:
     importProductsBucketName: water-shop-import-files
+    catalogItemsQueueUrl: !ImportValue CatalogItemsQueueUrl
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
@@ -24,6 +25,11 @@ provider:
         - 's3:PutObject'
       Resource:
         - 'arn:aws:s3:::${self:provider.environment.importProductsBucketName}/parsed/*'
+    - Effect: 'Allow'
+      Action:
+        - 'sqs:SendMessage'
+        - 'sqs:GetQueueUrl'
+      Resource: !ImportValue CatalogItemsQueueArn
 
 plugins:
   - serverless-webpack

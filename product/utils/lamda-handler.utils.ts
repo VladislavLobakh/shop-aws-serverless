@@ -41,17 +41,18 @@ export const lambdaHandler = (
 
       console.error(`ERR <=== [${statusCode}] `, err.message, err.stack);
     } finally {
-      return {
-        statusCode,
-        headers: {
-          ...CORS_HEADERS,
-          'Content-Type': params.contentType
-        },
-        body:
-          params.contentType === 'application/json'
-            ? JSON.stringify(result)
-            : result
-      };
+      return buildResponse(statusCode, result);
     }
+  };
+};
+
+export const buildResponse = (statusCode: HttpStatusCode, result: any) => {
+  return {
+    statusCode,
+    headers: {
+      ...CORS_HEADERS,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(result)
   };
 };
